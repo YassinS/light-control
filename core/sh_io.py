@@ -8,7 +8,8 @@ class Device:
         self.device_type = device_type
         self.device_id = device_id
         self.device_info = device_info
-        self.device_state = dict()
+        self.device_state = False
+        self.pin = 0
 
     def __str__(self) -> str:
         return f"{self.name} ({self.device_type})"
@@ -28,8 +29,14 @@ class Device:
     def get_device_info(self) -> dict:
         return self.device_info
 
-    def get_device_state(self) -> dict:
+    def get_device_state(self) -> bool:
         return self.device_state
+
+    def get_pin(self) -> int:
+        return self.pin
+
+    def set_pin(self, pin: int) -> None:
+        self.pin = pin
 
     def set_name(self, name: str) -> None:
         self.name = name
@@ -43,7 +50,7 @@ class Device:
     def set_device_info(self, device_info: dict) -> None:
         self.device_info = device_info
 
-    def set_device_state(self, device_state: dict) -> None:
+    def set_device_state(self, device_state: bool) -> None:
         self.device_state = device_state
 
 
@@ -90,6 +97,29 @@ class Actor(Device):
 
     def __repr__(self) -> str:
         return f"Actor: {super().__repr__()}"
+
+    def setup(self):
+        pass
+
+
+class Led(Actor):
+    def __init__(self, name, device_type, device_id, device_info):
+        super().__init__(name, device_type, device_id, device_info)
+
+    def __str__(self) -> str:
+        return f"LED: {super().__str__()}"
+
+    def __repr__(self) -> str:
+        return f"LED: {super().__repr__()}"
+
+    def turn_on(self):
+        self.set_device_state(True)
+
+    def turn_off(self):
+        self.set_device_state(False)
+
+    def blink(self):
+        pass
 
     def setup(self):
         pass
