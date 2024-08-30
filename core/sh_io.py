@@ -1,5 +1,6 @@
 import random
 from datetime import datetime, time
+import pigpio
 
 
 class Device:
@@ -10,6 +11,8 @@ class Device:
         self.device_info = device_info
         self.device_state = False
         self.pin = 0
+        self.is_set_up = False
+        self.pi = pigpio.pi()
 
     def __str__(self) -> str:
         return f"{self.name} ({self.device_type})"
@@ -17,8 +20,9 @@ class Device:
     def __repr__(self) -> str:
         return f"{self.name} ({self.device_type})"
 
-    def get_name(self) -> str:
-        return self.name
+    
+    def get_is_set_up(self) -> bool:
+        return self.is_set_up
 
     def get_device_type(self) -> str:
         return self.device_type
@@ -34,6 +38,9 @@ class Device:
 
     def get_pin(self) -> int:
         return self.pin
+
+    def get_name(self) -> str:
+        return self.name
 
     def set_pin(self, pin: int) -> None:
         self.pin = pin
@@ -52,6 +59,9 @@ class Device:
 
     def set_device_state(self, device_state: bool) -> None:
         self.device_state = device_state
+    
+    def set_is_set_up(self, val: bool):
+        self.is_set_up = val
 
 
 class Sensor(Device):
@@ -75,17 +85,22 @@ class Sensor(Device):
         return Condition(self, "==")
 
     def read(self):
-        return self.value
+        if self.is_set_up:
+            return self.pi.read(self.pin)
+        else:
+            raise Exception("Sensor is not set up")
 
     def setup(self):
-        self.value = random.randint(0, 100)
-        pass
+        self.pi.set_mode(self.pin, pigpio.INPUT)
+        self.is_set_up = True
+
 
     def update(self):
-        self.value = random.randint(0, 100)
-
-    def listen(self):
-        pass
+        if self.is_set_up:
+            self.value = self.pi.read(self.pin)
+        else:
+            raise Exception("Sensor is not set up")
+        
 
 
 class Actor(Device):
@@ -99,7 +114,20 @@ class Actor(Device):
         return f"Actor: {super().__repr__()}"
 
     def setup(self):
-        pass
+        self.pi.set_mode(self.pin, pigpio.OUTPUT)
+        self.is_set_up = True
+    
+    def on(self):
+        if self.is_set_up:
+            self.pi.write(self.pin, 1)
+        else:
+            raise Exception("Actor is not set up")
+
+    def off(self):
+        if self.is_set_up:
+            self.pi.write(self.pin, 0)
+        else:
+            raise Exception("Actor is not set up")
 
 
 class Led(Actor):
@@ -112,14 +140,11 @@ class Led(Actor):
     def __repr__(self) -> str:
         return f"LED: {super().__repr__()}"
 
-    def turn_on(self):
-        self.set_device_state(True)
-
-    def turn_off(self):
-        self.set_device_state(False)
-
-    def blink(self):
-        pass
+    def blink(self, interval: int = 2):
+        self.on()
+        time.sleep(interval)
+        self.off()
+        time.sleep(interval)
 
     def setup(self):
         pass
