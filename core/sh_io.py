@@ -128,6 +128,27 @@ class Actor(Device):
             raise Exception("Actor is not set up")
 
 
+class Button(Sensor):
+    def __init__(self, name, device_type, device_id, device_info, pin):
+        super().__init__(name, device_type, device_id, device_info, pin)
+
+    def __str__(self) -> str:
+        return f"Button: {super().__str__()}"
+
+    def __repr__(self) -> str:
+        return f"Button: {super().__repr__()}"
+
+    def setup(self):
+        self.pi.set_mode(self.pin, pigpio.INPUT)
+        self.is_set_up = True
+
+    def is_pressed(self):
+        if self.is_set_up:
+            return self.pi.read(self.pin) == 0
+        else:
+            raise Exception("Button is not set up")
+
+
 class Led(Actor):
     def __init__(self, name, device_type, device_id, device_info, pin):
         super().__init__(name, device_type, device_id, device_info, pin)
