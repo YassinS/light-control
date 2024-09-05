@@ -255,17 +255,17 @@ class Switch(Circuit):
         super().__init__(sensors, actors)
         self.a = actors[0]
         self.s = sensors[0]
+        self.old_btn = False
+        self.state = False
 
     def execute(self):
-        old_btn = False
-        state = False
-        if self.s.is_pressed() and not old_btn:
-            if not state:
-                state = True
+        if self.s.is_pressed() and not self.old_btn:
+            if not self.state:
+                self.state = True
                 self.a.on()
             else:
                 self.a.off()
-                state = False
-            old_btn = True
-        elif not self.s.is_pressed() and old_btn:
-            old_btn = False
+                self.state = False
+            self.old_btn = True
+        elif not self.s.is_pressed() and self.old_btn:
+            self.old_btn = False
