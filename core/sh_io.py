@@ -234,3 +234,38 @@ class TimeCondition:
         elif self.start_time and self.end_time:
             return self.start_time <= current_time <= self.end_time
         return False
+
+
+"""
+This serves as a base class for all circuits.
+"""
+
+
+class Circuit:
+    def __init__(self, sensors: list, actors: list) -> None:
+        self.sensors = sensors
+        self.actors = actors
+
+    def execute(self):
+        pass
+
+
+class Switch(Circuit):
+    def __init__(self, sensors: list, actors: list):
+        super().__init__(sensors, actors)
+        self.a = actors[0]
+        self.s = sensors[0]
+
+    def execute(self):
+        old_btn = False
+        state = False
+        if self.s.is_pressed() and not old_btn:
+            if not state:
+                state = True
+                self.a.on()
+            else:
+                self.a.off()
+                state = False
+            old_btn = True
+        elif not self.s.is_pressed() and old_btn:
+            old_btn = False
