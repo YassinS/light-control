@@ -142,9 +142,9 @@ class Button(Sensor):
         self.pi.set_mode(self.pin, pigpio.INPUT)
         self.is_set_up = True
 
-    def is_pressed(self):
+    def is_pressed(self) -> bool:
         if self.is_set_up:
-            return self.pi.read(self.pin) == 0
+            return self.pi.read(self.pin) == 1
         else:
             raise Exception("Button is not set up")
 

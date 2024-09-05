@@ -1,3 +1,6 @@
+# DEPRECATED CODE NEEDS TO BE UPDATED TO USE NEWEST LIB FEATURES AND SYNTAX
+
+
 from core.sh_system import Program
 from core.sh_io import Sensor, Actor, Constant, TimeCondition
 import time
