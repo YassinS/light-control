@@ -128,6 +128,21 @@ class Actor(Device):
             raise Exception("Actor is not set up")
 
 
+class MotionDetector(Sensor):
+    def __init__(self, name, device_type, device_id, device_info, pin):
+        super().__init__(name, device_type, device_id, device_info, pin)
+
+    def setup(self):
+        self.pi.set_mode(self.pin, pigpio.INPUT)
+        self.is_set_up = True
+
+    def is_motion_detected(self):
+        if self.is_set_up:
+            return self.pi.read(self.pin) == 1
+        else:
+            raise Exception("Motion detector is not set up")
+
+
 class Button(Sensor):
     def __init__(self, name, device_type, device_id, device_info, pin):
         super().__init__(name, device_type, device_id, device_info, pin)
